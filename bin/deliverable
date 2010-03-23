@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+var sys = require('sys');
+var deliverable = require(__dirname+'/../lib/deliverable');
+
+
+sys.print("Starting Server...");
+deliverable.start();
+sys.puts('done!');
+
+process.addListener('SIGINT', function() {
+  sys.print("\nShutting Down Server...");
+  deliverable.stop();
+  sys.puts('done!');
+});

@@ -120,12 +120,15 @@ statsRequest: (request, response) ->
 
 server: http.createServer (request, response) ->
   request.body = ''
-  request.addListener 'data', ((data) -> request.body += data )
-  request.addListener 'end', ((data) ->
+  request.addListener 'data', (data) -> request.body += data
+  request.addListener 'end', (data) ->
     if request.url.search(/^\/deliver/) >= 0
       deliveryRequest(request, response) 
     else 
       statsRequest(request, response)
-    )
- 
-server.listen SERVER_PORT
+
+exports.start: ->
+  server.listen SERVER_PORT
+  
+exports.stop: ->
+  server.close()
