@@ -32,9 +32,10 @@ get: (url, headers, callback) ->
 
 deliverable.start()
 
-get '/deliver', {'X-Deliverable-Endpoint': 'http://localhost:1234'}, -> 
-  deliverable.stop()
-  responder.close()
+get '/deliver', {'X-Deliverable-Endpoint': 'http://localhost:1234'}, ->
+  setTimeout (->
+    deliverable.stop()
+    responder.close()), 100
 
-process.addListener 'end', -> 
+process.addListener 'exit', -> 
   assert.equal requestCount, 1
