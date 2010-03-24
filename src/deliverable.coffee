@@ -24,7 +24,7 @@ url.fullPath: (uri) ->
   path
 
 class Delivery
-  constructor: (request) ->
+  constructor: (endpoint, request) ->
     TOTAL_DELIVERIES++
     ACTIVE_DELIVERIES++
     @id = TOTAL_DELIVERIES
@@ -34,7 +34,7 @@ class Delivery
     @endpoint: null
     @callback: null
     @errback: null
-    @endpoint:  url.parse(request.headers['x-deliverable-endpoint']) if request.headers['x-deliverable-endpoint']
+    @endpoint:  url.parse(endpoint)
     @callback:  url.parse(request.headers['x-deliverable-callback']) if request.headers['x-deliverable-callback']
     @errback:  url.parse(request.headers['x-deliverable-errback']) if request.headers['x-deliverable-errback']
     @log "Delivery Request Received: " + @endpoint.href
@@ -73,7 +73,6 @@ class Delivery
       @log "Callback Failed: " + uri.href
   log: (msg) ->
     sys.log('['+@id+']\t' + msg)
-  
 
 class DeliveryAttempt
   constructor: (delivery) ->
@@ -99,7 +98,7 @@ class DeliveryAttempt
     @headers['x-deliverable-callback']: null
 
 deliveryRequest: (request, response) ->
-  new Delivery(request)
+  request.headers['x-deliverable-endpoint'].split('; ').forEach( (endpoint) -> new Delivery(endpoint, request) )
   response.writeHeader 200, {'Content-Type': 'text/plain'}
   response.write 'ACCEPTED'
   response.close()

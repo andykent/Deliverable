@@ -4,7 +4,7 @@ assert: require 'assert'
 
 client: http.createClient 5678, "localhost"
 
-exports.get: (url, headers, callback) ->
+get: (url, headers, callback) ->
   request: client.request "GET", url, headers
   request.addListener 'response', (response) ->
     response.body: ''

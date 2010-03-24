@@ -36,9 +36,9 @@ Current Features
 - Async operation with support of callback and errback urls
 - delivery statistics
 - decaying retries on delivery failures
+- support for multiple delivery endpoints for the same message in a single http request
 
 Planned Features
 ----------------
 - client libraries
 - Callbacks should contain the response data
-- support for multiple delivery endpoints for the same message in a single http request
