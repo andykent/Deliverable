@@ -5,9 +5,9 @@ url: require 'url'
 MAX_ATTEMPTS: 5
 RETRY_DELAY: 5 * 1000
 SERVER_PORT: 5678
+MAX_CONNECTIONS: 1024
 
-
-
+ACTIVE_CONNECTIONS: 0
 TOTAL_DELIVERIES: 0
 ACTIVE_DELIVERIES: 0
 SUCCESSFUL_DELIVERIES: 0
@@ -67,7 +67,7 @@ class Delivery
     try
       client: http.createClient(uri.port || 80, uri.hostname)
       request: client.request 'POST', url.fullPath(uri)
-      request.addListener('response', ((res) => @log "Callback Successful: " + uri.href  ))
+      request.addListener 'response', (res) => @log "Callback Successful: " + uri.href
       request.close()
     catch e
       @log "Callback Failed: " + uri.href
@@ -84,13 +84,21 @@ class DeliveryAttempt
     @endpoint: delivery.endpoint
     @cleanHeaders()
   deliver: (callback) ->
+    if ACTIVE_CONNECTIONS >= MAX_CONNECTIONS
+      @delivery.log('Waiting for a spare connection')
+      setTimeout((=> @deliver(callback)), 100)
+      return
+    ACTIVE_CONNECTIONS++
     try
       client: http.createClient(@endpoint.port || 80, @endpoint.hostname)
       request: client.request @method, url.fullPath(@endpoint), @headers
       request.write(@body)
-      request.addListener('response', ((res) -> callback(res.statusCode < 400) ))
+      request.addListener 'response', (res) -> 
+        callback res.statusCode < 400
+        res.addListener 'end', -> ACTIVE_CONNECTIONS--
       request.close()
     catch e
+      ACTIVE_CONNECTIONS--
       callback(false)
   cleanHeaders: ->
     @headers['x-deliverable-endpoint']: null

@@ -47,6 +47,7 @@ Current Features
 - delivery statistics
 - decaying retries on delivery failures
 - support for multiple delivery endpoints for the same message in a single http request
+- MAX_CONNECTIONS limit so you can limit the number of outgoing requests active at any one time
 
 Planned Features
 ----------------
