@@ -1,16 +1,22 @@
 Deliverable
 ===========
 
-Deliverable is a evented webhook delivery server. 
+Deliverable is an evented webhook delivery server. 
 The server is designed to proxy HTTP requests to remote machines that maybe slow, unreliable or non-existent.
 
 Note
 ----
-things are currently pretty beta so I really wouldn't rely on this for production use unless you are prepared to get your hands dirty.
+Things are currently pretty beta so I really wouldn't rely on this for production use unless you are prepared to get your hands dirty.
 
 Usage 
 -----
-Deliverable is an evented server optimised for holding thousands of connections open, Deliverable works as an proxy to the outside world, all you need to do is set a single header informing Deliverable of the final destination for your request. Here's an example.
+To get started with Deliverable you will need to... 
+
+- install node.js then clone this repository
+- clone this repository
+- run `bin/deliverable`
+
+Deliverable is an evented server optimised for holding thousands of connections open, Deliverable works as a proxy to the outside world, all you need to do is set a single header informing Deliverable of the final destination for your request. Here's an example.
 
 Original...
 
@@ -29,6 +35,10 @@ The call responds to all HTTP methods and forwards the full request body. Calls 
 
     X-Deliverable-Callback: http://site.com/success-callback\r\n
     X-Deliverable-Errback: http://site.com/error-callback\r\n
+
+You can deliver the same request to multiple endpoints by seperating them with '; ' like this...
+
+    X-Deliverable-Endpoint: http://site.com/hook1; http://site.com/hook2; http://site.com/hook3\r\n
 
 Current Features
 ----------------
