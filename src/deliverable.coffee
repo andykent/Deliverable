@@ -106,9 +106,15 @@ class DeliveryAttempt
     @headers['x-deliverable-callback']: null
 
 deliveryRequest: (request, response) ->
-  request.headers['x-deliverable-endpoint'].split('; ').forEach( (endpoint) -> new Delivery(endpoint, request) )
-  response.writeHeader 200, {'Content-Type': 'text/plain'}
-  response.write 'ACCEPTED'
+  if request.headers['x-deliverable-endpoint']
+    request.headers['x-deliverable-endpoint'].split('; ').forEach( (endpoint) -> new Delivery(endpoint, request) )
+    response.writeHeader 200, {'Content-Type': 'text/plain'}
+    response.write 'ACCEPTED'
+  else
+    message = 'Request Ignored - no X-Deliverable-Endpoint header was given.'
+    response.writeHeader 412, {'Content-Type': 'text/plain'}
+    response.write message
+    sys.log(message)
   response.close()
 
 statsRequest: (request, response) ->
